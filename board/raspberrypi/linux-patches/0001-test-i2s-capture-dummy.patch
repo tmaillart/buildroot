@@ -1,0 +1,52 @@
+From 951d39fe13390f0dccd65e5668863652544c5a9d Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Th=C3=A9o=20MAILLART?= <theo.maillart@devialet.com>
+Date: Sun, 31 Jan 2021 11:36:23 +0100
+Subject: [PATCH] test i2s capture dummy
+
+---
+ arch/arm/boot/dts/bcm2710-rpi-3-b.dts | 29 +++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
+
+diff --git a/arch/arm/boot/dts/bcm2710-rpi-3-b.dts b/arch/arm/boot/dts/bcm2710-rpi-3-b.dts
+index e833915a7854..93d28e91d83e 100644
+--- a/arch/arm/boot/dts/bcm2710-rpi-3-b.dts
++++ b/arch/arm/boot/dts/bcm2710-rpi-3-b.dts
+@@ -162,6 +162,35 @@
+ 	pinctrl-0 = <&i2s_pins>;
+ };
+ 
++/ {
++    codec_dummy: codec_dummy {
++        compatible = "linux,snd-soc-dummy";
++        #sound-dai-cells = <0>;
++        status = "okay";
++    };
++
++    sound {
++        compatible = "simple-audio-card";
++        simple-audio-card,name = "DUMMY_SND";
++
++        simple-audio-card,format = "i2s";
++        simple-audio-card,bitclock-master = <&snd_codec>;
++        simple-audio-card,frame-master = <&snd_codec>;
++        //simple-audio-card,mclk-fs = <512>;
++        status = "okay";
++
++        snd_cpu: simple-audio-card,cpu {
++            sound-dai = <&i2s>;
++            dai-tdm-slot-num = <2>;
++            dai-tdm-slot-width = <16>;
++        };
++
++        snd_codec: simple-audio-card,codec {
++            sound-dai = <&codec_dummy>;
++        };
++    };
++};
++
+ &leds {
+ 	act_led: act {
+ 		label = "led0";
+-- 
+2.27.0
+
